@@ -5,37 +5,56 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Form } from "@/components/ui/form";
 import Image from "next/image";
+import { toast } from "sonner";
+import FormField from "./FormField";
 
 
 const formSchema = z.object({
-    username: z.string().min(2).max(20),
+    name: z.string().min(2).max(20),
 });
 
-const AuthForm = ( { type }: {type: FormType} ) => {
+
+const AuthFormSchema = (type: FormType) => {
+    return z.object({
+        name: type === "sign-up" ? z.string().min(3).max(20) : z.string().optional(),
+
+        email: z.string().email(),
+        password: z.string().min(6),
+    });
+
+}
+
+const AuthForm = ({ type }: { type: FormType }) => {
+
+    const formSchema = AuthFormSchema(type);
+
     // 1. Define your form.
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            username: "",
+            name: "",
+            email: "",
+            password: "",
         },
     })
 
     // 2. Define a submit handler.
     function onSubmit(values: z.infer<typeof formSchema>) {
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
-        console.log(values)
+        try {
+            if (type === "sign-up") {
+                // Call the sign-up API.
+                console.log("Sign up", values);
+            } else {
+                // Call the sign-in API.
+                console.log("Sign in", values);
+            }
+
+        } catch (error) {
+            console.log(error);
+            toast.error(`An error occurred. ${error}`);
+        }
     }
 
     const isSignIn = type === "sign-in";
@@ -51,24 +70,27 @@ const AuthForm = ( { type }: {type: FormType} ) => {
 
 
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6 mt-4 form">
-                        {!isSignIn && <p>
-                            Name
-                        </p>}
-                        <p>Email</p>
-                        <p>Password</p>
-            
-                        <Button className="btn" type="submit">{isSignIn ? 'Sign in' : 'Create an account' }</Button>
-                    </form>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6 mt-4 form" />
+                    {!isSignIn && (
+                        <FormField control={form.control}
+                            name="name"
+                            label="name"
+                            placeholder="shadcn" />
+                    )}
+                    <p>Email</p>
+                    <p>Password</p>
+
+                    <Button className="btn" type="submit">{isSignIn ? 'Sign in' : 'Create an account'}</Button>
+
                 </Form>
                 <p className="text-center">
                     {isSignIn ? "Don't have an account?" : "Already have an account?"}
                     <a href={isSignIn ? "/sign-up" : "/sign-in"} className="font-bold text-user-primary ml-1">
-                    {!isSignIn ? "Sign in" : 'Sign up'} </a>
+                        {!isSignIn ? "Sign in" : 'Sign up'} </a>
 
                 </p>
             </div>
-        </div>
+        </div >
     );
 };
 
