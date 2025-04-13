@@ -6,13 +6,13 @@ import { Control, Controller, FieldValues, Path } from 'react-hook-form';
 
 interface formFieldProps<T extends FieldValues> {
     control: Control<T>;
-    username: Path<T>;
+    name: Path<T>;
     label: string;
     placeholder?: string;
     type?: 'text' | 'password' | 'email' | 'number' | 'file';
 }
 
-const FormField = ({ control, name, label, placeholder, type = "text" }: formFieldProps<T>) => (
+const FormField = <T extends FieldValues>({ control, name, label, placeholder, type = "text" }: formFieldProps<T>) => (
 
     <Controller
         name={name}
@@ -21,13 +21,14 @@ const FormField = ({ control, name, label, placeholder, type = "text" }: formFie
         render={({ field }) => (
 
             <FormItem>
-                <FormLabel className="label">Username</FormLabel>
+                <FormLabel className="label">{label}</FormLabel>
                 <FormControl>
-                    <Input placeholder="shadcn" {...field} />
+                    <Input className="input"
+                        placeholder={placeholder}
+                        type={type}
+                        {...field} />
                 </FormControl>
-                <FormDescription>
-                    This is your public display name.
-                </FormDescription>
+
                 <FormMessage />
             </FormItem>
         )}
