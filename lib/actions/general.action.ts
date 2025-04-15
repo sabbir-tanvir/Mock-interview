@@ -17,6 +17,20 @@ export async function createFeedback(params: CreateFeedbackParams) {
       )
       .join("");
 
+    // Extract interviewer questions and interviewee answers
+    const questionAnswers: Array<{ question: string; answer: string }> = [];
+    for (let i = 0; i < transcript.length - 1; i++) {
+      if (
+        transcript[i].role === "assistant" &&
+        transcript[i + 1].role === "user"
+      ) {
+        questionAnswers.push({
+          question: transcript[i].content,
+          answer: transcript[i + 1].content,
+        });
+      }
+    }
+
     const { object } = await generateObject({
       model: google("gemini-2.0-flash-001", {
         structuredOutputs: false,
@@ -33,6 +47,9 @@ export async function createFeedback(params: CreateFeedbackParams) {
         - **Problem-Solving**: Ability to analyze problems and propose solutions.
         - **Cultural & Role Fit**: Alignment with company values and job role.
         - **Confidence & Clarity**: Confidence in responses, engagement, and clarity.
+
+        In addition, analyze and extract the interview questions and answers from the transcript and present them in a structured format.
+        For each question asked by the interviewer, provide the corresponding answer from the candidate.
         `,
       system:
         "You are a professional interviewer analyzing a mock interview. Your task is to evaluate the candidate based on structured categories",
@@ -46,6 +63,7 @@ export async function createFeedback(params: CreateFeedbackParams) {
       strengths: object.strengths,
       areasForImprovement: object.areasForImprovement,
       finalAssessment: object.finalAssessment,
+      questionAnswers: object.questionAnswers || questionAnswers, // Use AI generated or fallback to our extraction
       createdAt: new Date().toISOString(),
     };
 

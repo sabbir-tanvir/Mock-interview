@@ -92,6 +92,29 @@ const Feedback = async ({ params }: RouteParams) => {
         </ul>
       </div>
 
+      {/* Questions and Answers Section */}
+      {feedback?.questionAnswers && feedback.questionAnswers.length > 0 && (
+        <div className="flex flex-col gap-4 mt-6">
+          <h2 className="text-xl font-semibold">Interview Questions and Answers</h2>
+          <div className="space-y-6">
+            {feedback.questionAnswers.map((qa, index) => (
+              <div key={index} className="p-4 bg-slate-50 rounded-lg border border-slate-200">
+                <div className="mb-2">
+                  <p className="font-bold text-gray-700">
+                    Q{index + 1}: {qa.question}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-gray-600">
+                    <span className="font-medium">Your Answer:</span> {qa.answer}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="buttons">
         <Button className="btn-secondary flex-1">
           <Link href="/" className="flex w-full justify-center">
