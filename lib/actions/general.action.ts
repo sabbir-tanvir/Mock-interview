@@ -18,7 +18,7 @@ export async function createFeedback(params: CreateFeedbackParams) {
       .join("");
 
     // Extract interviewer questions and interviewee answers
-    const questionAnswers: Array<{ question: string; answer: string }> = [];
+    const questionAnswers: Array<{ question: string; answer: string; modelAnswer: string }> = [];
     for (let i = 0; i < transcript.length - 1; i++) {
       if (
         transcript[i].role === "assistant" &&
@@ -27,6 +27,7 @@ export async function createFeedback(params: CreateFeedbackParams) {
         questionAnswers.push({
           question: transcript[i].content,
           answer: transcript[i + 1].content,
+          modelAnswer: "", // Will be populated by AI
         });
       }
     }
@@ -48,11 +49,15 @@ export async function createFeedback(params: CreateFeedbackParams) {
         - **Cultural & Role Fit**: Alignment with company values and job role.
         - **Confidence & Clarity**: Confidence in responses, engagement, and clarity.
 
-        In addition, analyze and extract the interview questions and answers from the transcript and present them in a structured format.
-        For each question asked by the interviewer, provide the corresponding answer from the candidate.
+        In addition, analyze the interview questions and answers from the transcript. For each question asked by the interviewer:
+        1. Extract the exact question
+        2. Extract the candidate's answer
+        3. Provide a model/ideal answer that would be considered excellent or complete for this question. The model answer should be comprehensive, technically accurate, well-structured, and showcase deep understanding of the topic.
+        
+        Present these in a structured format with the question, the candidate's answer, and your model answer for each question.
         `,
       system:
-        "You are a professional interviewer analyzing a mock interview. Your task is to evaluate the candidate based on structured categories",
+        "You are a professional interviewer analyzing a mock interview. Your task is to evaluate the candidate based on structured categories and provide model answers to interview questions.",
     });
 
     const feedback = {

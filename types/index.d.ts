@@ -14,6 +14,7 @@ interface Feedback {
   questionAnswers?: Array<{
     question: string;
     answer: string;
+    modelAnswer: string;
   }>;
 }
 

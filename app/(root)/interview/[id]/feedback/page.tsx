@@ -104,9 +104,15 @@ const Feedback = async ({ params }: RouteParams) => {
                     Q{index + 1}: {qa.question}
                   </p>
                 </div>
-                <div>
+                <div className="mb-4">
                   <p className="text-gray-600">
                     <span className="font-medium">Your Answer:</span> {qa.answer}
+                  </p>
+                </div>
+                <div className="pt-3 border-t border-slate-200">
+                  <p className="text-gray-800">
+                    <span className="font-medium text-primary-200">Appropriate Answer:</span> 
+                    <span className="text-gray-700 ml-1">{qa.modelAnswer}</span>
                   </p>
                 </div>
               </div>
